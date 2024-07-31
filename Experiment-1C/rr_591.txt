@@ -1,0 +1,54 @@
+def round_robin(processes, burst_times, time_slice):
+    n = len(processes)
+    waiting_times = [0] * n
+    turnaround_times = [0] * n
+    remaining_burst_times = burst_times[:]
+    
+    current_time = 0
+    completed_processes = 0
+    
+    while completed_processes < n:
+        for i in range(n):
+            if remaining_burst_times[i] > 0:
+                if remaining_burst_times[i] <= time_slice:
+                    current_time += remaining_burst_times[i]
+                    remaining_burst_times[i] = 0
+                    turnaround_times[i] = current_time
+                    completed_processes += 1
+                else:
+                    remaining_burst_times[i] -= time_slice
+                    current_time += time_slice
+    
+    for i in range(n):
+        waiting_times[i] = turnaround_times[i] - burst_times[i]
+    
+    avg_waiting_time = sum(waiting_times) / n
+    avg_turnaround_time = sum(turnaround_times) / n
+    
+    return waiting_times, turnaround_times, avg_waiting_time, avg_turnaround_time
+
+def main():
+    n = int(input("Enter the number of processes: "))
+    
+    processes = []
+    burst_times = []
+    
+    for i in range(n):
+        burst_time = int(input(f"Enter Burst Time for process {i + 1}: "))
+        processes.append(i + 1)
+        burst_times.append(burst_time)
+        
+    time_slice = int(input("Enter the size of time slice: "))
+    
+    waiting_times, turnaround_times, avg_waiting_time, avg_turnaround_time = round_robin(processes, burst_times, time_slice)
+    
+    print("\nThe Average Turnaround time is:", avg_turnaround_time)
+    print("The Average Waiting time is:", avg_waiting_time)
+    print("\n\tPROCESS\tBURST TIME\tWAITING TIME\tTURNAROUND TIME")
+    
+    for i in range(n):
+        print(f"\t{processes[i]}\t{burst_times[i]}\t\t{waiting_times[i]}\t\t{turnaround_times[i]}")
+
+if __name__ == "__main__":
+    main()
+
